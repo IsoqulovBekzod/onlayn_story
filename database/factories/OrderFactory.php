@@ -2,12 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\Order;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Order>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
  */
 class OrderFactory extends Factory
 {
@@ -19,9 +18,10 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::inRandomOrder()->first()->id,
-            'status' => $this->faker->randomElement(['pending', 'cancelled', 'completed']),
-            'total_amount' => $this->faker->randomFloat(2, 10, 100),
+            'user_id' => User::factory(),
+            'total'   => $this->faker->randomFloat(2, 20, 500), // 20 dan 500 gacha tasodifiy onlik raqam
+            'status'  => $this->faker->randomElement(['pending', 'completed', 'cancelled']), // Status qiymatlari
         ];
     }
+
 }

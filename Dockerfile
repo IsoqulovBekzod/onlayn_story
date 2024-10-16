@@ -1,3 +1,4 @@
+
 # Start from the official PHP image with the required extensions
 FROM php:8.3-fpm
 
@@ -25,4 +26,3 @@ RUN composer install
 
 # Set permissions for storage and bootstrap/cache
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
-
