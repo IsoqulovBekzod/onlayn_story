@@ -6,7 +6,6 @@ use App\Models\Category;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
-use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class CategoryControllerTest extends TestCase
@@ -24,20 +23,25 @@ class CategoryControllerTest extends TestCase
 
     public function test_index_returns_successful_response()
     {
-        $categories=Category::factory(3)->create();
+        $categories = Category::factory(3)->create();
 
         $response = $this->getJson('/api/categories');
+
         $response->assertStatus(200)
             ->assertJsonCount(3);
     }
+
     public function test_store_creates_new_category()
     {
         $response = $this->postJson('/api/categories', [
             'name' => 'New Category',
+            'parent_id' => null,
         ]);
 
         $response->assertStatus(201)
             ->assertJsonFragment(['name' => 'New Category']);
+
+        $this->assertDatabaseHas('categories', ['name' => 'New Category']);
     }
 
     public function test_store_fails_with_invalid_data()
@@ -54,7 +58,7 @@ class CategoryControllerTest extends TestCase
     {
         $category = Category::factory()->create();
 
-        $response = $this->getJson("/api/categories/$category->id");
+        $response = $this->getJson("/api/categories/{$category->id}");
 
         $response->assertStatus(200)
             ->assertJsonFragment(['name' => $category->name]);
@@ -73,10 +77,14 @@ class CategoryControllerTest extends TestCase
 
         $response = $this->putJson("/api/categories/{$category->id}", [
             'name' => 'Updated Category',
+            'parent_id' => null,
         ]);
 
         $response->assertStatus(200)
             ->assertJsonFragment(['name' => 'Updated Category']);
+
+
+        $this->assertDatabaseHas('categories', ['name' => 'Updated Category']);
     }
 
     public function test_update_fails_with_invalid_data()
@@ -84,7 +92,7 @@ class CategoryControllerTest extends TestCase
         $category = Category::factory()->create();
 
         $response = $this->putJson("/api/categories/{$category->id}", [
-            'name' => '', // Invalid name
+            'name' => '',
         ]);
 
         $response->assertStatus(422)

@@ -33,7 +33,8 @@ class CategoryController extends Controller
     public function store(Request $request): \Illuminate\Http\JsonResponse
     {
         $request->validate([
-            'name' => 'required'
+            'name' => 'required|string|max:255',
+            'parent_id' => 'nullable|exists:categories,id'
         ]);
 
         $category = Category::create([
@@ -48,9 +49,15 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): \Illuminate\Http\JsonResponse
     {
-        //
+        $category = Category::find($id);
+
+        if (!$category) {
+            return response()->json(['message' => 'Category not found'], 404);
+        }
+
+        return response()->json($category);
     }
 
     /**
